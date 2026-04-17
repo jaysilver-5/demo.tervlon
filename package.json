@@ -1,0 +1,15 @@
+{
+  "name": "tervlon",
+  "private": true,
+  "scripts": {
+    "dev:web": "pnpm --filter @tervlon/web dev",
+    "dev:api": "pnpm --filter @tervlon/api start:dev",
+    "dev": "pnpm run --parallel dev:web dev:api",
+    "build:web": "pnpm --filter @tervlon/web build",
+    "build:api": "pnpm --filter @tervlon/api build",
+    "lint": "pnpm -r run lint"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

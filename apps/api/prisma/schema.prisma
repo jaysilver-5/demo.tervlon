@@ -1,0 +1,212 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  LEARNER
+  INSTRUCTOR
+  HIRING_MANAGER
+  CANDIDATE
+  ADMIN
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  username      String   @unique
+  passwordHash  String
+  role          Role     @default(LEARNER)
+  refreshToken  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  sessions      WorkspaceSession[]
+  createdAssessments  Assessment[] @relation("CreatedAssessments")
+  candidateEntries    AssessmentCandidate[]
+
+  @@map("users")
+}
+
+enum Stack {
+  NODE_EXPRESS_PRISMA
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum SimStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum SessionStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ABANDONED
+}
+
+enum SnapshotType {
+  AUTO_SAVE
+  SUBMISSION
+  CHECK_RUN
+  MANUAL
+}
+
+model WorkspaceSnapshot {
+  id           String          @id @default(cuid())
+  sessionId    String
+  session      WorkspaceSession @relation(fields: [sessionId], references: [id])
+  snapshotType SnapshotType
+  fileTree     Json
+  chatHistory  Json            @default("[]")
+  createdAt    DateTime        @default(now())
+
+  @@map("workspace_snapshots")
+}
+
+model Simulation {
+  id                String      @id @default(cuid())
+  title             String
+  description       String
+  stack             Stack
+  difficulty        Difficulty
+  estimatedMinutes  Int
+  starterRepoUrl    String      @default("")
+  starterRepoRef    String      @default("")
+  evaluationWeights Json        @default("{}")
+  status            SimStatus   @default(DRAFT)
+  tickets           Ticket[]
+  triggers          Trigger[]
+  sessions          WorkspaceSession[]
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  assessments     Assessment[]
+
+  @@map("simulations")
+}
+
+model Ticket {
+  id                 String     @id @default(cuid())
+  simulationId       String
+  simulation         Simulation @relation(fields: [simulationId], references: [id])
+  sequence           Int
+  title              String
+  brief              String
+  testFiles          String[]
+  evaluationCriteria Json       @default("{}")
+  estimatedMinutes   Int
+  referenceImpl      String?
+  minimumPassRate    Float      @default(0.6)
+  createdAt          DateTime   @default(now())
+  evaluations        TicketEvaluation[]
+
+  @@unique([simulationId, sequence])
+  @@map("tickets")
+}
+
+model Trigger {
+  id            String     @id @default(cuid())
+  simulationId  String
+  simulation    Simulation @relation(fields: [simulationId], references: [id])
+  condition     Json
+  effect        Json
+  pmMessage     String
+  createdAt     DateTime   @default(now())
+
+  @@map("triggers")
+}
+
+model WorkspaceSession {
+  id               String        @id @default(cuid())
+  userId           String
+  user             User          @relation(fields: [userId], references: [id])
+  simulationId     String
+  simulation       Simulation    @relation(fields: [simulationId], references: [id])
+  status           SessionStatus @default(ACTIVE)
+  currentTicketSeq Int           @default(1)
+  startedAt        DateTime      @default(now())
+  lastActiveAt     DateTime      @default(now())
+  snapshots        WorkspaceSnapshot[]
+  evaluations      TicketEvaluation[]
+  candidateEntry   AssessmentCandidate?
+
+  @@unique([userId, simulationId])
+  @@map("workspace_sessions")
+}
+
+model TicketEvaluation {
+  id                 String           @id @default(cuid())
+  sessionId          String
+  session            WorkspaceSession @relation(fields: [sessionId], references: [id])
+  ticketId           String
+  ticket             Ticket           @relation(fields: [ticketId], references: [id])
+  testResults        Json
+  aiReview           Json
+  scores             Json
+  terminalOutput     String
+  usedReset          Boolean          @default(false)
+  evaluationDuration Int
+  submittedAt        DateTime         @default(now())
+
+  @@map("ticket_evaluations")
+}
+
+model Assessment {
+  id              String           @id @default(cuid())
+  creatorId       String
+  creator         User             @relation("CreatedAssessments", fields: [creatorId], references: [id])
+  simulationId    String
+  simulation      Simulation       @relation(fields: [simulationId], references: [id])
+  title           String
+  inviteCode      String           @unique
+  settings        Json             @default("{}")
+  status          AssessmentStatus @default(ACTIVE)
+  candidates      AssessmentCandidate[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@map("assessments")
+}
+
+enum AssessmentStatus {
+  ACTIVE
+  CLOSED
+  ARCHIVED
+}
+
+model AssessmentCandidate {
+  id            String           @id @default(cuid())
+  assessmentId  String
+  assessment    Assessment       @relation(fields: [assessmentId], references: [id])
+  userId        String
+  user          User             @relation(fields: [userId], references: [id])
+  sessionId     String?          @unique
+  session       WorkspaceSession? @relation(fields: [sessionId], references: [id])
+  status        CandidateStatus  @default(INVITED)
+  joinedAt      DateTime?
+  completedAt   DateTime?
+
+  @@unique([assessmentId, userId])
+  @@map("assessment_candidates")
+}
+
+enum CandidateStatus {
+  INVITED
+  IN_PROGRESS
+  COMPLETED
+  ABANDONED
+}
