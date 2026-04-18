@@ -16,10 +16,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      'https://demo.tervlon.com',
-    ],
+    origin: 'https://demo.tervlon.com',
     credentials: true,
   });
 
