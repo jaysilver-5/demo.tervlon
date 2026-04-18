@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import Logo_Image from '@/public/logo.png'
+import { useRouter } from "next/navigation";
 
 const B = {
   l: "#5BC8F5",
@@ -23,6 +24,7 @@ const mono = "'DM Mono', monospace";
 const jb = "'JetBrains Mono', monospace";
 
 export default function TervlonLanding() {
+  const router = useRouter()
   useEffect(() => {
     const l = document.createElement("link");
     l.href =
@@ -143,6 +145,7 @@ function Atmosphere() {
 
 /* ─── NAV ─── */
 function Nav() {
+  const router = useRouter()
   return (
     <header style={{ position: "fixed", top: 16, left: "50%", transform: "translateX(-50%)", width: "calc(100% - 24px)", maxWidth: 1160, zIndex: 50 }}>
       <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 8px 10px 18px", borderRadius: 999, border: "1px solid rgba(91,200,245,0.08)", background: "rgba(7,10,16,0.84)", backdropFilter: "blur(24px)", boxShadow: "0 8px 40px rgba(0,0,0,0.42)", gap: 12 }}>
@@ -157,7 +160,7 @@ function Nav() {
               <a key={label} href={href} className="nav-link">{label}</a>
             ))}
           </div>
-          <button className="btn-p" style={{ padding: "10px 20px", fontSize: 13 }}>Open Demo</button>
+          <button onClick={() => router.push('/app')} className="btn-p" style={{ padding: "10px 20px", fontSize: 13 }}>Open Demo</button>
         </div>
       </nav>
     </header>
@@ -166,6 +169,7 @@ function Nav() {
 
 /* ─── HERO ─── */
 function Hero() {
+  const router = useRouter()
   return (
     <section style={{ position: "relative", zIndex: 1, padding: "172px 0 92px" }}>
       <div className="container">
@@ -184,8 +188,8 @@ function Hero() {
           </p>
 
           <div className="hero-actions" style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 12, marginTop: 32 }}>
-            <button className="btn-p" style={{ padding: "16px 32px", fontSize: 15 }}>Start a Sprint</button>
-            <button className="btn-g" style={{ padding: "16px 28px", fontSize: 14 }}>Explore Workflow</button>
+            <button onClick={() => router.push('/app')} className="btn-p" style={{ padding: "16px 32px", fontSize: 15 }}>Start a Sprint</button>
+            <button onClick={() => router.push('/app')} className="btn-g" style={{ padding: "16px 28px", fontSize: 14 }}>Explore Workflow</button>
           </div>
 
           <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 8, marginTop: 26 }}>
@@ -530,6 +534,7 @@ function AudienceGrid() {
 
 /* ─── TRACKS ─── */
 function Tracks() {
+  const router = useRouter()
   const soon = [
     { name: "Frontend Engineering", desc: "Component architecture, state management, and product delivery." },
     { name: "DevOps & Infra", desc: "CI/CD pipelines, containerization, infrastructure-as-code." },
@@ -559,7 +564,7 @@ function Tracks() {
               <div style={{ fontFamily: serif, fontSize: 32, lineHeight: 1.08, letterSpacing: "-0.03em", marginBottom: 10 }}>Backend Engineering</div>
               <p style={{ fontSize: 14, lineHeight: 1.85, color: "rgba(228,230,236,0.44)", maxWidth: 560 }}>Build APIs, auth systems, and data layers inside structured sprint simulations. Express, Prisma, PostgreSQL — real tools, real evaluation.</p>
             </div>
-            <button className="btn-p" style={{ padding: "14px 28px", fontSize: 14 }}>Start a Sprint</button>
+            <button onClick={() => router.push('/app')} className="btn-p" style={{ padding: "14px 28px", fontSize: 14 }}>Start a Sprint</button>
           </div>
         </div>
 
@@ -611,6 +616,7 @@ function Faq() {
 
 /* ─── CTA ─── */
 function ClosingCTA() {
+  const router = useRouter()
   return (
     <section style={{ position: "relative", zIndex: 1, padding: "0 0 90px" }}>
       <div className="container">
@@ -624,8 +630,8 @@ function ClosingCTA() {
             Start with a guided sprint, build inside context, and leave with signal people can actually use.
           </p>
           <div style={{ position: "relative", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: 28 }}>
-            <button className="btn-p" style={{ padding: "16px 34px", fontSize: 15 }}>Start a Sprint</button>
-            <button className="btn-g" style={{ padding: "16px 28px", fontSize: 14 }}>Explore Workflow</button>
+            <button onClick={() => router.push('/app')} className="btn-p" style={{ padding: "16px 34px", fontSize: 15 }}>Start a Sprint</button>
+            <button onClick={() => router.push('/app')} className="btn-g" style={{ padding: "16px 28px", fontSize: 14 }}>Explore Workflow</button>
           </div>
         </div>
       </div>
